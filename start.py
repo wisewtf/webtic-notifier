@@ -32,8 +32,8 @@ for events in data:
         filter_query = {'EventId': event['EventId']}
         update_query = {'$set': event}
         result = collection.update_one(filter_query, update_query, upsert=True)
-            
-        if result.upserted_id or result.modified_count > 0:
+
+        if event['Type'] == "CINEMA" and result.upserted_id or result.modified_count > 0:
             new_events.append(event)
 
 for new_event in new_events:
