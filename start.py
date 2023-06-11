@@ -1,6 +1,7 @@
 import requests
 import apprise
 import tomli
+import re
 from pymongo import MongoClient
 
 with open("config.toml", "rb") as f:
@@ -12,6 +13,8 @@ collection = db['events']
 
 notifier = apprise.Apprise()
 notifier.add(configuration['apprise']['telegram'])
+
+cinema_id_pattern = r"idcinema=(\d+)"
 
 
 events_data = []
@@ -46,6 +49,13 @@ for new_event in new_events:
     year = new_event['Year']
     category = new_event['Category']
     
+    match_ciema_id = re.search(cinema_id_pattern, picture)
+    
+    if match_ciema_id:
+        cinema_id = match_ciema_id.group(1)
+    else:
+        cinema_id = 'could not find cinema id'
+    
     notifier.notify(
         title='*NEW EVENT AT THEATERS YOU FOLLOW*',
         body=(
@@ -58,6 +68,7 @@ for new_event in new_events:
             f'*3D:* {is3d}\n'
             f'[ ]({picture})\n'
             # f'[Order tickets here](https://www.webtic.it/#/shopping?action=loadLocal&localId=)\n'
-            f'Debug: `{eventid}`'
+            f'Debug: `{eventid}`\n'
+            f'Cinema ID: `{cinema_id}`'
         ),
     )
