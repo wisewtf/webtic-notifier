@@ -16,7 +16,6 @@ notifier.add(configuration['apprise']['telegram'])
 
 cinema_id_pattern = r"idcinema=(\d+)"
 
-
 events_data = []
 
 for ids in configuration['webtic']['cinema_ids']:
