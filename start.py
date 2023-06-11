@@ -6,34 +6,31 @@ from pymongo import MongoClient
 with open("config.toml", "rb") as f:
     configuration = tomli.load(f)
 
-mongo_connect = MongoClient(configuration['database'][0]['host'])
+mongo_connect = MongoClient(configuration['database']['host'])
 db = mongo_connect['webtic']
 collection = db['events']
 
 notifier = apprise.Apprise()
-notifier.add(configuration['apprise'][0]['telegram'])
+notifier.add(configuration['apprise']['telegram'])
 
-for key, value in configuration.items():
-    for item in value:
-        if 'cinema_ids' in item:
-            cinema_ids = item['cinema_ids']
 
-data = []
+events_data = []
 
-for cinema_id in cinema_ids:
-    events_url = f"https://secure.webtic.it/api/wtjsonservices.ashx?localid={cinema_id}&trackid=33&wtid=getFullScheduling"
+for ids in configuration['webtic']['cinema_ids']:
+    events_url = f"https://secure.webtic.it/api/wtjsonservices.ashx?localid={ids}&trackid=33&wtid=getFullScheduling"
     responses = requests.get(events_url)
-    data.append(responses.json())
+    events_data.append(responses.json())
 
 new_events = []
 
-for events in data:
+for events in events_data:
     for event in events['DS']['Scheduling']['Events']:
+        print(event)
         filter_query = {'EventId': event['EventId']}
         update_query = {'$set': event}
         result = collection.update_one(filter_query, update_query, upsert=True)
 
-        if event['Type'] == "CINEMA" and result.upserted_id or result.modified_count > 0:
+        if result.upserted_id or result.modified_count > 0:
             new_events.append(event)
 
 for new_event in new_events:
