@@ -25,7 +25,6 @@ new_events = []
 
 for events in events_data:
     for event in events['DS']['Scheduling']['Events']:
-        print(event)
         filter_query = {'EventId': event['EventId']}
         update_query = {'$set': event}
         result = collection.update_one(filter_query, update_query, upsert=True)
