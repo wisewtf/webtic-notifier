@@ -1,8 +1,8 @@
-[[apprise]]
+[apprise]
 telegram = 'tgram://bot_token/chat_id/?format=markdown&image=no&preview=yes'
 
-[[database]]
-host = 'mongodb://localhost:27017/'
+[database]
+host = 'mongodb://user:pass@mongodb'
 
-[[webtic]]
+[webtic]
 cinema_ids = [ 1234, 5678 ]
