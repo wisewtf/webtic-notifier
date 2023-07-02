@@ -1,24 +1,15 @@
 import requests
 import apprise
-import tomli
+import tools
 import re
-from pymongo import MongoClient
-
-with open("config.toml", "rb") as f:
-    configuration = tomli.load(f)
-
-mongo_connect = MongoClient(configuration['database']['host'])
-db = mongo_connect['webtic']
-collection = db['events']
+import db_manager
 
 notifier = apprise.Apprise()
-notifier.add(configuration['apprise']['telegram'])
-
-cinema_id_pattern = r"idcinema=(\d+)"
+notifier.add(tools.configurator('apprise', 'telegram')) 
 
 events_data = []
 
-for ids in configuration['webtic']['cinema_ids']:
+for ids in tools.configurator('webtic', 'cinema_ids'):
     events_url = f"https://secure.webtic.it/api/wtjsonservices.ashx?localid={ids}&trackid=33&wtid=getFullScheduling"
     responses = requests.get(events_url)
     events_data.append(responses.json())
@@ -29,10 +20,11 @@ for events in events_data:
     for event in events['DS']['Scheduling']['Events']:
         filter_query = {'EventId': event['EventId']}
         update_query = {'$set': event}
-        result = collection.update_one(filter_query, update_query, upsert=True)
+        result = db_manager.mongo_connect('webtic', 'events').update_one(filter_query, update_query, upsert=True)  # noqa: E501
 
         if result.upserted_id or result.modified_count > 0:
-            new_events.append(event)
+            # new_events.append(event)
+            print(event)
 
 for new_event in new_events:
     
@@ -48,7 +40,7 @@ for new_event in new_events:
     year = new_event['Year']
     category = new_event['Category']
     
-    match_ciema_id = re.search(cinema_id_pattern, picture)
+    match_ciema_id = re.search(tools.CINEMA_ID_PATTERN, picture)
     
     if match_ciema_id:
         cinema_id = match_ciema_id.group(1)
@@ -66,7 +58,7 @@ for new_event in new_events:
             f'*Type:* {type}\n'
             f'*3D:* {is3d}\n'
             f'[ ]({picture})\n'
-            # f'[Order tickets here](https://www.webtic.it/#/shopping?action=loadLocal&localId=)\n'
+            f'[Order tickets here](https://www.webtic.it/#/shopping?action=loadLocal&localId={cinema_id})\n'
             f'Debug: `{eventid}`\n'
             f'Cinema ID: `{cinema_id}`'
         ),
