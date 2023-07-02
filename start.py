@@ -22,9 +22,8 @@ for events in events_data:
         update_query = {'$set': event}
         result = db_manager.mongo_connect('webtic', 'events').update_one(filter_query, update_query, upsert=True)  # noqa: E501
 
-        if result.upserted_id or result.modified_count > 0:
-            # new_events.append(event)
-            print(event)
+        if result.upserted_id is not None:
+            new_events.append(event)
 
 for new_event in new_events:
     
