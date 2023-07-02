@@ -3,6 +3,7 @@ import apprise
 import tools
 import re
 import db_manager
+import theaters
 
 notifier = apprise.Apprise()
 notifier.add(tools.configurator('apprise', 'telegram')) 
@@ -59,6 +60,6 @@ for new_event in new_events:
             f'[ ]({picture})\n'
             f'[Order tickets here](https://www.webtic.it/#/shopping?action=loadLocal&localId={cinema_id})\n'
             f'Debug: `{eventid}`\n'
-            f'Cinema ID: `{cinema_id}`'
+            f'Cinema: `{theaters.theater_finder(int(cinema_id),0)}`'
         ),
     )

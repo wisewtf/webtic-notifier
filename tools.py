@@ -1,6 +1,7 @@
 import tomli
 
 CINEMA_ID_PATTERN = r"idcinema=(\d+)"
+THEATERS_URL = "https://www.webtic.it/proxyWsl/Services/BoWtJsonServices.ashx?datasource=CREADW&wtid=webticEventsMc"
     
 def configurator(section, value):
     
