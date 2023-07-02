@@ -71,7 +71,13 @@ def webtic_notifier():
             ),
         )
         
-schedule.every(1).minutes.do(webtic_notifier)
+if tools.configurator('webtic','timer') >= 15:
+    timer_value = tools.configurator('webtic','timer')
+else:
+    print("Timer value must not be less than 15 minutes.")
+    exit()
+    
+schedule.every(timer_value).minutes.do(webtic_notifier)
 
 while True:
     schedule.run_pending()
