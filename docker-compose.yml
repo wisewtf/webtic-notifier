@@ -1,0 +1,19 @@
+version: '3'
+services:
+  webtic-notifier:
+    image: webtic-notifier
+    depends_on:
+      - mongodb
+    volumes:
+      - type: bind
+        source: ./config.toml
+        target: /app/config.toml
+  mongodb:
+    image: mongodb/mongodb-community-server:latest
+    environment:
+      - MONGODB_INITDB_ROOT_USERNAME=user
+      - MONGODB_INITDB_ROOT_PASSWORD=pass
+    volumes:
+      - type: bind
+        source: ./db
+        target: /app/db
