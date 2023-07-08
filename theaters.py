@@ -1,19 +1,27 @@
 import requests
 import tools
+import db
 
-def theater_finder(id:int, index:int):
-    theater_list = requests.get(tools.THEATERS_URL)
-    theater_data = theater_list.json()
-    locals_list = theater_data['DS']['Locals']
+def theater_finder(id:int,item:str):
+    local_id = id
+    query = {'LocalId': local_id}
 
-    theaters = {}
-
-    for local in locals_list:
-        local_datas = locals_list[local]
-        local_id = local_datas['LocalId']
-        local_description = local_datas['Description']
-        local_province = local_datas['ProvinceId']
+    theater = db.connect('webtic', 'theaters').find_one(query)
         
-        theaters[local_id] = local_description, local_province
+    return theater[item]
+
+def theater_updater():
+    
+        print('Updating full theaters collection')
+    
+        theater_list = requests.get(tools.THEATERS_URL)
+        theater_data = theater_list.json()
+        locals_list = theater_data['DS']['Locals']
         
-    return theaters[id][index]
+        for locals in locals_list:
+            local_data = locals_list[locals]
+            filter = {'LocalId': local_data['LocalId']}
+            update = {'$set': local_data}
+            db.connect('webtic', 'theaters').update_one(filter, update, upsert=True)
+            
+        print("Theater collection updated")

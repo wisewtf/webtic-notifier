@@ -2,14 +2,12 @@ import requests
 import apprise
 import tools
 import re
-import db_manager
+import db
 import theaters
 import schedule
 import time
 
 def webtic_notifier():
-
-    print("Script initialized...")
 
     notifier = apprise.Apprise()
     notifier.add(tools.configurator('apprise', 'telegram')) 
@@ -23,13 +21,13 @@ def webtic_notifier():
 
     new_events = []
 
-    print("Looking for events...")
+    print("Looking for new events")
 
     for events in events_data:
         for event in events['DS']['Scheduling']['Events']:
             filter_query = {'EventId': event['EventId']}
             update_query = {'$set': event}
-            result = db_manager.mongo_connect('webtic', 'events').update_one(filter_query, update_query, upsert=True)  # noqa: E501
+            result = db.connect('webtic', 'events').update_one(filter_query, update_query, upsert=True)  # noqa: E501
 
             if result.upserted_id is not None:
                 new_events.append(event)
@@ -64,21 +62,26 @@ def webtic_notifier():
                 f'*Genre(s):* {category}\n'
                 f'*Type:* {type}\n'
                 f'*3D:* {is3d}\n'
-                f'*Cinema:* `{theaters.theater_finder(int(cinema_id),0)}`\n'
+                f'*Cinema:* `{theaters.theater_finder(int(cinema_id),"Description")}`\n'
                 f'[ ]({picture})\n'
                 f'[Order tickets here](https://www.webtic.it/#/shopping?action=loadLocal&localId={cinema_id})\n'
                 f'Debug: `{eventid}`\n'
             ),
         )
-        
+
 if tools.configurator('webtic','timer') >= 15:
     timer_value = tools.configurator('webtic','timer')
 else:
     print("Timer value must not be less than 15 minutes.")
     exit()
-    
-schedule.every(timer_value).minutes.do(webtic_notifier)
+
+eventSchedule = schedule.Scheduler()
+theaterSchedule = schedule.Scheduler()
+
+eventSchedule.every(timer_value).minutes.do(webtic_notifier)
+theaterSchedule.every(1).weeks.do(theaters.theater_updater)
 
 while True:
-    schedule.run_pending()
+    eventSchedule.run_pending()
+    theaterSchedule.run_pending()
     time.sleep(1)
