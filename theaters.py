@@ -2,7 +2,7 @@ import requests
 import tools
 import db
 
-def theater_finder(id:int,item:str):
+def theater_finder(id:int,item:str) -> str:
     local_id = id
     query = {'LocalId': local_id}
 

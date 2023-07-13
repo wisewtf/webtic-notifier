@@ -7,6 +7,8 @@ import theaters
 import schedule
 import time
 
+theaters.theater_updater()
+
 def webtic_notifier():
 
     notifier = apprise.Apprise()
