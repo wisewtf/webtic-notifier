@@ -1,7 +1,7 @@
 version: '3'
 services:
   webtic-notifier:
-    image: megawise/webtic-notifier:milestone-1.2
+    image: megawise/webtic-notifier:milestone-1.2.6
     depends_on:
       - mongodb
     volumes:
@@ -16,4 +16,6 @@ services:
     volumes:
       - type: bind
         source: ./db
-        target: /app/db
+        target: /data/db
+    ports:
+      - 27017:27017

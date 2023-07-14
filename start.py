@@ -6,11 +6,14 @@ import db
 import theaters
 import schedule
 import time
+from datetime import datetime
+
+theaters.theater_updater()
 
 def webtic_notifier():
 
     notifier = apprise.Apprise()
-    notifier.add(tools.configurator('apprise', 'telegram')) 
+    notifier.add(tools.configurator('apprise', 'telegram'))
 
     events_data = []
 
@@ -18,8 +21,6 @@ def webtic_notifier():
         events_url = f"https://secure.webtic.it/api/wtjsonservices.ashx?localid={ids}&trackid=33&wtid=getFullScheduling"
         responses = requests.get(events_url)
         events_data.append(responses.json())
-
-    new_events = []
 
     print("Looking for new events")
 
@@ -30,43 +31,42 @@ def webtic_notifier():
             result = db.connect('webtic', 'events').update_one(filter_query, update_query, upsert=True)  # noqa: E501
 
             if result.upserted_id is not None:
-                new_events.append(event)
-
-    for new_event in new_events:
-        
-        eventid = new_event['EventId']
-        title = new_event['Title']
-        duration = new_event['Duration']
-        type = new_event['Type']
-        is3d = new_event['Is3D']
-        director = new_event['Director']
-        duration = new_event['Duration']
-        picture = 'https://secure.webtic.it/api/'+new_event['Picture']
-        year = new_event['Year']
-        category = new_event['Category']
-        
-        match_ciema_id = re.search(tools.CINEMA_ID_PATTERN, picture)
-        
-        if match_ciema_id:
-            cinema_id = match_ciema_id.group(1)
-        else:
-            cinema_id = 'could not find cinema id'
-        
-        notifier.notify(
-            title='*NEW EVENT AT THEATERS YOU FOLLOW*',
-            body=(
-                f'\n*Title:* {title}\n'
-                f'*Length:* {duration}\n'
-                f'*Director:* {director}\n'
-                f'*Year:* {year}\n'
-                f'*Genre(s):* {category}\n'
-                f'*Type:* {type}\n'
-                f'*3D:* {is3d}\n'
-                f'*Cinema:* `{theaters.theater_finder(int(cinema_id),"Description")}`\n'
-                f'[ ]({picture})\n'
-                f'[Order tickets here](https://www.webtic.it/#/shopping?action=loadLocal&localId={cinema_id})\n'
-                f'Debug: `{eventid}`\n'
-            ),
+                
+                dates = [datetime.strptime(day['Day'], '%Y-%m-%dT%H:%M:%S').strftime('%d-%m-%Y') for day in event['Days']] # noqa: E501
+                eventid = event['EventId']
+                title = event['Title']
+                duration = event['Duration']
+                type = event['Type']
+                is3d = event['Is3D']
+                director = event['Director']
+                duration = event['Duration']
+                picture = 'https://secure.webtic.it/api/'+event['Picture']
+                year = event['Year']
+                category = event['Category']
+                
+                match_ciema_id = re.search(tools.CINEMA_ID_PATTERN, picture)
+                
+                if match_ciema_id:
+                    cinema_id = match_ciema_id.group(1)
+                else:
+                    cinema_id = 'could not find cinema id'
+                
+                notifier.notify(
+                    title='*NEW EVENT AT THEATERS YOU FOLLOW*',
+                    body=(
+                        f'\n*Title:* {title}\n'
+                        f'*Length:* {duration}\n'
+                        f'*Director:* {director}\n'
+                        f'*Year:* {year}\n'
+                        f'*Genre(s):* {category}\n'
+                        f'*Type:* {type}\n'
+                        f'*3D:* {is3d}\n'
+                        f'*Dates:* {", ".join(dates)}\n'
+                        f'*Cinema:* `{theaters.theater_finder(int(cinema_id),"Description")}`\n'  # noqa: E501
+                        f'[ ]({picture})\n'
+                        f'[Order tickets here](https://www.webtic.it/#/shopping?action=loadLocal&localId={cinema_id})\n'
+                        f'Debug: `{eventid}`\n'
+                    ),
         )
 
 if tools.configurator('webtic','timer') >= 15:
