@@ -1,6 +1,6 @@
 # Webtic Notifier
 
-**Versione:** `Milestone 1.2`
+**Versione:** `Milestone 1.6`
 
 ## Introduzione
 
