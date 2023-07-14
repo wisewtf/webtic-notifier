@@ -11,17 +11,19 @@ def theater_finder(id:int,item:str) -> str:
     return theater[item]
 
 def theater_updater():
-    
-        print('Updating full theaters collection')
-    
+
         theater_list = requests.get(tools.THEATERS_URL)
         theater_data = theater_list.json()
         locals_list = theater_data['DS']['Locals']
         
-        for locals in locals_list:
-            local_data = locals_list[locals]
-            filter = {'LocalId': local_data['LocalId']}
-            update = {'$set': local_data}
-            db.connect('webtic', 'theaters').update_one(filter, update, upsert=True)
-            
-        print("Theater collection updated")
+        documents_count = db.connect('webtic', 'theaters').count_documents({})
+        
+        if len(locals_list) < documents_count:
+            print('Creating full theaters collection')
+            for locals in locals_list:
+                local_data = locals_list[locals]
+                filter = {'LocalId': local_data['LocalId']}
+                update = {'$set': local_data}
+                db.connect('webtic', 'theaters').update_one(filter, update, upsert=True)
+        else:
+            print('Theaters already present')
