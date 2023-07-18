@@ -34,7 +34,7 @@ def webtic_notifier():
                 calendar = {}
                 for perfomances in event['Days']:
                     for performance in perfomances['Performances']:
-                        raw_dates = datetime.strptime(performance['StartTime'], '%Y-%m-%dT%H:%M:%S').strftime('%d-%m %H:%M')  # noqa: E501
+                        raw_dates = datetime.strptime(performance['StartTime'], '%Y-%m-%dT%H:%M:%S').strftime('%d/%m %H:%M')  # noqa: E501
                         dates_split = raw_dates.split(" ")
                         event_date = dates_split[0]
                         event_time = dates_split[1]
