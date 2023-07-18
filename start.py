@@ -69,7 +69,7 @@ def webtic_notifier():
                     movie_date += f'`{key}`: {value}\n'
                 
                 notifier.notify(
-                    title='*NEW EVENT AT THEATERS YOU FOLLOW*',
+                    title=f'*NEW AVAILABLE MOVIE AT {theaters.theater_finder(int(cinema_id),"Description")}*',  # noqa: E501
                     body=(
                         f'\n*Title:* {title}\n'
                         f'*Length:* {duration}\n'
