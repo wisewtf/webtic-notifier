@@ -31,8 +31,20 @@ def webtic_notifier():
             result = db.connect('webtic', 'events').update_one(filter_query, update_query, upsert=True)  # noqa: E501
 
             if result.upserted_id is not None:
-                
-                dates = [datetime.strptime(day['Day'], '%Y-%m-%dT%H:%M:%S').strftime('%d-%m-%Y') for day in event['Days']] # noqa: E501
+                calendar = {}
+                for perfomances in event['Days']:
+                    for performance in perfomances['Performances']:
+                        raw_dates = datetime.strptime(performance['StartTime'], '%Y-%m-%dT%H:%M:%S').strftime('%d/%m %H:%M')  # noqa: E501
+                        dates_split = raw_dates.split(" ")
+                        event_date = dates_split[0]
+                        event_time = dates_split[1]
+                        
+                        if event_date not in calendar:
+                            calendar[event_date] = ""
+
+                        if calendar[event_date]:
+                            calendar[event_date] += " - "
+                        calendar[event_date] += f"{event_time}"
                 eventid = event['EventId']
                 title = event['Title']
                 duration = event['Duration']
@@ -51,8 +63,13 @@ def webtic_notifier():
                 else:
                     cinema_id = 'could not find cinema id'
                 
+                movie_date = ''
+                
+                for key, value in calendar.items():
+                    movie_date += f'`{key}`: {value}\n'
+                
                 notifier.notify(
-                    title='*NEW EVENT AT THEATERS YOU FOLLOW*',
+                    title=f'*NEW AVAILABLE MOVIE AT {theaters.theater_finder(int(cinema_id),"Description")}*',  # noqa: E501
                     body=(
                         f'\n*Title:* {title}\n'
                         f'*Length:* {duration}\n'
@@ -61,8 +78,8 @@ def webtic_notifier():
                         f'*Genre(s):* {category}\n'
                         f'*Type:* {type}\n'
                         f'*3D:* {is3d}\n'
-                        f'*Dates:* {", ".join(dates)}\n'
-                        f'*Cinema:* `{theaters.theater_finder(int(cinema_id),"Description")}`\n'  # noqa: E501
+                        f'*Cinema:* `{theaters.theater_finder(int(cinema_id),"Description")}`\n'  # noqa: E501                        
+                        f'\n{movie_date}\n'
                         f'[ ]({picture})\n'
                         f'[Order tickets here](https://www.webtic.it/#/shopping?action=loadLocal&localId={cinema_id})\n'
                         f'Debug: `{eventid}`\n'

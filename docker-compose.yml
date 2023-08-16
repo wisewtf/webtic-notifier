@@ -1,7 +1,7 @@
 version: '3'
 services:
   webtic-notifier:
-    image: megawise/webtic-notifier:milestone-1.2.6
+    image: megawise/webtic-notifier:milestone-1.2.7
     depends_on:
       - mongodb
     volumes:
