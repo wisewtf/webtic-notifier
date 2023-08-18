@@ -25,6 +25,8 @@ def webtic_notifier():
     print("Looking for new events")
 
     for events in events_data:
+        if not events['DS']['Scheduling']:
+            continue
         for event in events['DS']['Scheduling']['Events']:
             filter_query = {'EventId': event['EventId']}
             update_query = {'$set': event}
