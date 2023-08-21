@@ -6,12 +6,11 @@ argParser = argparse.ArgumentParser()
 argParser.add_argument("-c", "--config", help="Config file absolute path")
 
 if len(sys.argv)==1:
+    print("The config file absolute path must be specified.")
     argParser.print_help(sys.stderr)
     sys.exit(1)
 
 args = argParser.parse_args()
-
-
 
 CINEMA_ID_PATTERN = r"idcinema=(\d+)"
 THEATERS_URL = "https://www.webtic.it/proxyWsl/Services/BoWtJsonServices.ashx?datasource=CREADW&wtid=webticEventsMc"
