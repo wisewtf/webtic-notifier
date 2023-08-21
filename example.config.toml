@@ -6,4 +6,3 @@ host = 'mongodb://user:pass@mongodb'
 
 [webtic]
 cinema_ids = [ 1234, 5678 ]
-timer = 15 # Defined in minutes (15 minutes is the minimum)
