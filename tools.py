@@ -3,10 +3,9 @@ import argparse
 import sys
 
 argParser = argparse.ArgumentParser()
-argParser.add_argument("-c", "--config", help="Config file absolute path")
+argParser.add_argument("-c", "--config", help="Config file absolute path", required=True)
 
 if len(sys.argv)==1:
-    print("The config file absolute path must be specified.")
     argParser.print_help(sys.stderr)
     sys.exit(1)
 
