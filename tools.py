@@ -2,8 +2,8 @@ import tomli
 import argparse
 import sys
 
-argParser = argparse.ArgumentParser()
-argParser.add_argument("-c", "--config", help="Config file absolute path", required=True)
+argParser = argparse.ArgumentParser(descrption='The config file path must be specified')
+argParser.add_argument("-c", "--config", help="Config file absolute path")
 
 if len(sys.argv)==1:
     argParser.print_help(sys.stderr)
