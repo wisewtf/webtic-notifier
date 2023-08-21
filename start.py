@@ -80,3 +80,4 @@ for events in events_data:
                     f'[Order tickets here](https://www.webtic.it/#/shopping?action=loadLocal&localId={cinema_id})\n'
                     f'Debug: `{eventid}`\n'
                 ),
+            )
