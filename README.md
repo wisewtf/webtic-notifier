@@ -23,6 +23,7 @@ Per far si che lo script venga eseguito automaticamente, usando la libreria `sch
 - [X] Inserimento primo orario nel messaggio di telegram
 ~~Implementazione della multinotifica con tutto il parco API di Apprise~~
 - [ ] Rimozione libreria Apprise in favore di una semplicissima `POST` a Telegram
+- [ ] Ampliamento documentazione per uso con CRON e SYSTEMD
 
 ## Installazione e uso
 
