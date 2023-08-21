@@ -18,7 +18,7 @@ Per far si che lo script venga eseguito automaticamente, usando la libreria `sch
 
 ## Roadmap
 
-- [ ] Bot interattivo per Telegram
+~~Bot interattivo per Telegram~~
 - [ ] Configurazione cinema per nome e non per ID
 - [X] Inserimento primo orario nel messaggio di telegram
 ~~Implementazione della multinotifica con tutto il parco API di Apprise~~
