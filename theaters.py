@@ -19,11 +19,11 @@ def theater_updater():
         documents_count = db.connect('webtic', 'theaters').count_documents({})
         
         if len(locals_list) < documents_count:
-            print('Creating full theaters collection')
+            print('Updating theater collection')
             for locals in locals_list:
                 local_data = locals_list[locals]
                 filter = {'LocalId': local_data['LocalId']}
                 update = {'$set': local_data}
                 db.connect('webtic', 'theaters').update_one(filter, update, upsert=True)
         else:
-            print('Theaters already present')
+            print('Theater list is up-to-date.')
