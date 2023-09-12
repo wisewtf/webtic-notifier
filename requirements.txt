@@ -2,4 +2,4 @@ pymongo
 requests
 tomli
 apprise
-schedule
+argparse
