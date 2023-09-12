@@ -170,3 +170,4 @@ test.py
 db/
 testing/
 .vs/
+*.pickle

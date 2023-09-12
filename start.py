@@ -3,9 +3,28 @@ import tools
 import re
 import db
 import theaters
-from datetime import datetime
+from datetime import datetime, timedelta
+from pathlib import Path
 
-theaters.theater_updater()
+THEATERS_PICKLE_FILENAME = 'theater_date.pickle'
+THEATERS_PICKLE_PATH = Path(THEATERS_PICKLE_FILENAME)
+
+if not THEATERS_PICKLE_PATH.is_file():
+    print('Theaters pickle file missing, initializing...')
+    tools.pickle_initializer(THEATERS_PICKLE_FILENAME)
+    theaters.theater_updater()
+else:
+    pass
+
+saved_date = tools.unpickler(THEATERS_PICKLE_FILENAME)
+current_date = datetime.now()
+two_weeks_old_date = current_date - timedelta(weeks=2)
+
+if saved_date <= two_weeks_old_date:
+    print('Theater list is over two weeks old. Updating.')
+    theaters.theater_updater()
+else:
+    pass
 
 events_data = []
 

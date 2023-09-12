@@ -26,4 +26,4 @@ def theater_updater():
                 update = {'$set': local_data}
                 db.connect('webtic', 'theaters').update_one(filter, update, upsert=True)
         else:
-            print('Theater list is up-to-date.')
+            print('Theater list is now up-to-date.')
