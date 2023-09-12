@@ -4,17 +4,13 @@
 
 ## Introduzione
 
-`Webtic Notifier` è un piccolo esperimento in Python che esegue una logica di notifica ad ogni nuovo `evento` (inteso come programmazione cinematografica) da ognuno dei cinema presenti sotto l'ombrello del sistema di ticketing `Webtic`.
+`Webtic Notifier` è un piccolo esperimento in Python che esegue una logica di notifica ad ogni nuovo `evento` (inteso come programmazione cinematografica) da specificati cinema presenti sotto l'ombrello del sistema di ticketing `Webtic`.
 
 "Esperimento" perché sono un sistemista e non un programmatore, quindi essendo ancora alle prime armi sto imparando cosa va fatto, come va fatto e se va fatto.
 
 ## Funzionalità
 
-Al primo lancio, lo script salva in un database MongoDB tutti gli eventi dei cinema configurati nel file di configurazione (`config.toml`) e per tutti i lanci successivi si preoccuperà solo di prendere nota degli eventi (dei `documents` sotto MongoDB) che sono stati **aggiunti** al database (`collection` sotto MongoDB).
-
-Se un **nuovo** documento dovesse venir aggiunto, allora lo script si preoccuperà - tramite la libreria [Apprise](https://github.com/caronc/apprise) - di compilare un messaggio Telegram che verrà poi inviato nei canali definiti nel file di configurazione.
-
-Per far si che lo script venga eseguito automaticamente, usando la libreria `schedule`, rimarrà attivo ma dormiente. Questo fino a quando il lasso di tempo configurato (che ha un minimo di 15 minuti) non scade. Di conseguenza fino a quando non si rompe o lo si interrompe, lo script dovrebbe rimanere attivo ininterrottamente.
+Al primo lancio, lo script invia due richieste HTTP `GET` a due endpoint della `API` di Webtic. La prima è la lista di tutti i cinema e la seconda è la lista degli eventi presenti nei cinema preconfigurati nel file `config.toml`. I dati raccolti vengono salvati in due `collection` di un database MongoDB. Per tutti i lanci successivi, lo script si occuperà di mantenere la lista dei cinema aggiornata e ogni qualvolta un nuovo evento (quindi un evento in aggiunta alla `collection` degli eventi) si presenta, allora una notifica di Telegram viene inviata nella chat preconfigurata.
 
 ## Roadmap
 
@@ -27,8 +23,33 @@ Per far si che lo script venga eseguito automaticamente, usando la libreria `sch
 
 Questo capitolo è un work in progress. Sto ancora decidendo come meglio gestire il QoL di un utente medio.
 
-Attualmente il software è as-is. E' presente un'[immagine docker](https://hub.docker.com/r/megawise/webtic-notifier) buildata da me che funziona con l'ultima RC di Python.
+### Materiale necessario per i capaci
 
-Chi sa come farlo partire è libero di utilizzarlo.
+1. Una macchina con Python (3.7+) che può eseguire lo script.
+2. Un database MongoDB.
+3. Le librerie: `requests`, `argparse`, `tomli` e `pymongo` (Io consiglio l'utilizzo di [poetry](https://python-poetry.org/) o [venv](https://docs.python.org/3/library/venv.html) per gestire le dipendenze)
+4. `cron` o `systemd` timers per eseguire lo script ogni X.
 
-Appena decido che strada prendere spiegherò tutto in questa sezione.
+Lo script può essere eseguito da un timer `systemd` o da un `cron`.
+
+### Uso
+
+Clonare questo repo.
+
+`argparse` genera un tooltip utile a capire come lanciare lo script.
+
+Lanciandolo senza argomenti otteniamo questo output:
+
+```bash
+❯ python .\start.py
+usage: start.py [-h] [-c CONFIG]
+
+The config file path must be specified
+
+options:
+  -h, --help            show this help message and exit
+  -c CONFIG, --config CONFIG
+                        Config file absolute path
+```
+
+`-c` è un argomento obbligatorio. Indica quale file di configurazione usare. Il file di conifgurazione deve essere un `.toml` scritto come `example.config.toml` presente in questo repo.
