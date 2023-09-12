@@ -1,5 +1,4 @@
 import requests
-import apprise
 import tools
 import re
 import db
@@ -7,9 +6,6 @@ import theaters
 from datetime import datetime
 
 theaters.theater_updater()
-
-notifier = apprise.Apprise()
-notifier.add(tools.configurator('apprise', 'telegram'))
 
 events_data = []
 
@@ -62,22 +58,22 @@ for events in events_data:
             movie_date = ''
             
             for key, value in calendar.items():
-                movie_date += f'`{key}`: {value}\n'
+                movie_date += f'<code>{key}</code>: {value}\n'
             
-            notifier.notify(
-                title=f'*NEW AVAILABLE MOVIE AT {theaters.theater_finder(int(cinema_id),"Description")}*',  # noqa: E501
+            tools.notifier(
                 body=(
-                    f'\n*Title:* {title}\n'
-                    f'*Length:* {duration}\n'
-                    f'*Director:* {director}\n'
-                    f'*Year:* {year}\n'
-                    f'*Genre(s):* {category}\n'
-                    f'*Type:* {type}\n'
-                    f'*3D:* {is3d}\n'
-                    f'*Cinema:* `{theaters.theater_finder(int(cinema_id),"Description")}`\n'  # noqa: E501                        
+                    f'<b>NEW AVAILABLE MOVIE AT {theaters.theater_finder(int(cinema_id),"Description")}</b>\n'  # noqa: E501
+                    f'\n<b>Title:</b> {title}\n'
+                    f'<b>Length:</b> {duration}\n'
+                    f'<b>Director:</b> {director}\n'
+                    f'<b>Year:</b> {year}\n'
+                    f'<b>Genre(s):</b> {category}\n'
+                    f'<b>Type:</b> {type}\n'
+                    f'<b>3D:</b> {is3d}\n'
+                    f'<b>Cinema:</b> <code>{theaters.theater_finder(int(cinema_id),"Description")}</code>\n'  # noqa: E501                        
                     f'\n{movie_date}\n'
-                    f'[ ]({picture})\n'
-                    f'[Order tickets here](https://www.webtic.it/#/shopping?action=loadLocal&localId={cinema_id})\n'
-                    f'Debug: `{eventid}`\n'
+                    f'<a href="https://www.webtic.it/#/shopping?action=loadLocal&localId={cinema_id}">Order tickets here</a>\n'  # noqa: E501
+                    f'Debug: <code>{eventid}</code>\n'
                 ),
+                picture=picture
             )

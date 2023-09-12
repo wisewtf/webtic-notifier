@@ -1,8 +1,9 @@
 import tomli
 import argparse
 import sys
+import requests
 
-argParser = argparse.ArgumentParser(description='The config file path must be specified')
+argParser = argparse.ArgumentParser(description='The config file path must be specified')  # noqa: E501
 argParser.add_argument("-c", "--config", help="Config file absolute path")
 
 if len(sys.argv)==1:
@@ -21,3 +22,17 @@ def configurator(section, value):
 
     configuration = toml_data[section][value]
     return configuration
+
+def notifier(body, picture):
+    
+    apiToken = configurator('telegram', 'token')
+    chatID = configurator('telegram', 'chat_id')
+    apiURL = f"https://api.telegram.org/bot{apiToken}/sendPhoto"
+    parseMode = 'HTML'
+    message = body
+ 
+    try:
+        response =requests.post(apiURL, json={'chat_id': chatID, 'photo': picture, 'caption': message, 'parse_mode': parseMode})  # noqa: E501
+        print(response.text)
+    except Exception as e:
+        print(e)
