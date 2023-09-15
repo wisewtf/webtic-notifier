@@ -59,7 +59,7 @@ for events in events_data:
             eventid = event['EventId']
             title = event['Title']
             duration = event['Duration']
-            type = event['Type']
+            event_type = event['Type']
             is3d = event['Is3D']
             director = event['Director']
             duration = event['Duration']
@@ -79,20 +79,21 @@ for events in events_data:
             for key, value in calendar.items():
                 movie_date += f'<code>{key}</code>: {value}\n'
             
-            tools.notifier(
-                body=(
-                    f'<b>NEW AVAILABLE MOVIE AT {theaters.theater_finder(int(cinema_id),"Description")}</b>\n'  # noqa: E501
-                    f'\n<b>Title:</b> {title}\n'
-                    f'<b>Length:</b> {duration}\n'
-                    f'<b>Director:</b> {director}\n'
-                    f'<b>Year:</b> {year}\n'
-                    f'<b>Genre(s):</b> {category}\n'
-                    f'<b>Type:</b> {type}\n'
-                    f'<b>3D:</b> {is3d}\n'
-                    f'<b>Cinema:</b> <code>{theaters.theater_finder(int(cinema_id),"Description")}</code>\n'  # noqa: E501                        
-                    f'\n{movie_date}\n'
-                    f'<a href="https://www.webtic.it/#/shopping?action=loadLocal&localId={cinema_id}">Order tickets here</a>\n'  # noqa: E501
-                    f'Debug: <code>{eventid}</code>\n'
-                ),
-                picture=picture
-            )
+            if event_type == "CINEMA" or not tools.configurator('general', 'cinema_events_only'):  # noqa: E501
+                tools.notifier(
+                    body=(
+                        f'<b>NEW AVAILABLE MOVIE AT {theaters.theater_finder(int(cinema_id),"Description")}</b>\n'  # noqa: E501
+                        f'\n<b>Title:</b> {title}\n'
+                        f'<b>Length:</b> {duration}\n'
+                        f'<b>Director:</b> {director}\n'
+                        f'<b>Year:</b> {year}\n'
+                        f'<b>Genre(s):</b> {category}\n'
+                        f'<b>Type:</b> {event_type}\n'
+                        f'<b>3D:</b> {is3d}\n'
+                        f'<b>Cinema:</b> <code>{theaters.theater_finder(int(cinema_id),"Description")}</code>\n'  # noqa: E501                        
+                        f'\n{movie_date}\n'
+                        f'<a href="https://www.webtic.it/#/shopping?action=loadLocal&localId={cinema_id}">Order tickets here</a>\n'  # noqa: E501
+                        f'Debug: <code>{eventid}</code>\n'
+                    ),
+                    picture=picture
+                )
