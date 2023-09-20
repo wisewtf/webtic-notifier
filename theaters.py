@@ -15,9 +15,9 @@ def theater_updater():
         theater_list = requests.get(tools.THEATERS_URL)
         theater_data = theater_list.json()
         locals_list = theater_data['DS']['Locals']
-        
+
         documents_count = db.connect('webtic', 'theaters').count_documents({})
-        
+
         if len(locals_list) < documents_count:
             print('Updating theater collection')
             for locals in locals_list:
