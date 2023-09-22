@@ -1,6 +1,9 @@
 import telebot
 import db
 import tools
+import schedule
+import time
+import threading
 
 bot = telebot.TeleBot(tools.configurator('telegram', 'token'))
 
@@ -18,8 +21,8 @@ def theater_list(message):
             composed_message = ""
             for cinema in list_of_cinemas:
                 cinema_name, cinema_id = cinema
-                composed_message += f"\n{cinema_name.title()} ({cinema_id})"  # noqa: E501
-            bot.reply_to(message, composed_message)
+                composed_message += f"\n{cinema_name.title()} (<code>{cinema_id}</code>)"  # noqa: E501
+            bot.reply_to(message, composed_message, parse_mode='HTML')
 
     else:
         bot.reply_to(message, 'Non hai specificato il codice provincia!')
@@ -28,5 +31,15 @@ bot.remove_webhook()
 bot.set_my_commands([
     telebot.types.BotCommand("tl", "Lista i cinema presenti in webtic (e i loro ID), per provincia. (/tl MI)"),  # noqa: E501
 ])
+
+def schedule_db_cleanup():
+
+    schedule.every(1).weeks.do(db.database_cleanup)
+
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+        
+threading.Thread(target=schedule_db_cleanup, daemon=True).start()
 
 bot.polling()

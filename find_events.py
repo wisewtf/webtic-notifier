@@ -17,8 +17,7 @@ else:
     pass
 
 saved_date = tools.unpickler(THEATERS_PICKLE_FILENAME)
-current_date = datetime.now()
-two_weeks_old_date = current_date - timedelta(weeks=2)
+two_weeks_old_date = datetime.now() - timedelta(weeks=2)
 
 if saved_date <= two_weeks_old_date:
     print('Theater list is over two weeks old. Updating.')
