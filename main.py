@@ -4,32 +4,55 @@ import tools
 import schedule
 import time
 import threading
+import re
 
 bot = telebot.TeleBot(tools.configurator('telegram', 'token'))
 
 @bot.message_handler(commands=['tl'])
 def theater_list(message):
-    message_parts = message.text.split()
-    if len(message_parts) > 1:
-        provinceid = message_parts[1]
+    if len(tools.command_argument(message)) == 2:
         list_of_cinemas = []
-        for cinema in db.find_theater_by_province(provinceid):
-            list_of_cinemas.append((cinema['Description'], cinema['LocalId']))
+        for cinema in db.find_theater_by_province(tools.command_argument(message)[1]):
+            if len(tools.command_argument(message)[1]) > 2:
+                list_of_cinemas = []
+            else:
+                list_of_cinemas.append((cinema['Description'], cinema['LocalId']))
         if not list_of_cinemas:
-            bot.reply_to(message, f'Nessuna provincia {provinceid.upper()} trovata')  # noqa: E501
+            bot.reply_to(message, 
+                         f'Nessuna provincia "{tools.command_argument(message)[1]}" trovata',  parse_mode='HTML')  # noqa: E501
         else:
             composed_message = ""
             for cinema in list_of_cinemas:
                 cinema_name, cinema_id = cinema
                 composed_message += f"\n{cinema_name.title()} (<code>{cinema_id}</code>)"  # noqa: E501
             bot.reply_to(message, composed_message, parse_mode='HTML')
-
+    elif len(tools.command_argument(message)) > 1:
+        bot.reply_to(message, 'Questo comando accetta un solo argomento.')
     else:
-        bot.reply_to(message, 'Non hai specificato il codice provincia!')
+        bot.reply_to(message, 'Specifica il codice provincia.')
+        
+@bot.message_handler(commands=['fm'])
+def find_movie(message):
+    if len(tools.command_argument(message)) >= 3:
+        argument = ' '.join(tools.command_argument(message)[1:])
+        print('argument:', argument)
+        for query_result in db.find_movie_by_title(argument):
+            matched_cinema_id = re.findall(tools.CINEMA_ID_PATTERN, query_result)
+            print('matched cinema id:', matched_cinema_id)
+            if matched_cinema_id:
+                cinema_id = matched_cinema_id.group(1)
+                composed_message = ""
+                cinema_name, cinema_id = matched_cinema_id
+                composed_message += f"\n{cinema_name.title()} (<code>{cinema_id}</code>)"  # noqa: E501
+                print(composed_message)
+    else:
+        print('fuckoff')
+
 
 bot.remove_webhook()
 bot.set_my_commands([
     telebot.types.BotCommand("tl", "Lista i cinema presenti in webtic (e i loro ID), per provincia. (/tl MI)"),  # noqa: E501
+    telebot.types.BotCommand("fm", "Trova i film prenotabili da i cinema configurati. /tl Harry Potter")  # noqa: E501
 ])
 
 def schedule_db_cleanup():

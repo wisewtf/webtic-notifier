@@ -40,9 +40,8 @@ def notifier(body, picture):
         print(e)
         
 def pickle_initializer(pickle_name: str):
-    
+
     CHECK_PATH= Path(pickle_name)
-    
     current_date = datetime.now()
  
     if CHECK_PATH.is_file():
@@ -62,3 +61,7 @@ def pickler(pickle_name: str, data):
     
     with open(pickle_name, 'wb') as handle:
         pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        
+def command_argument(chat_message):
+    message_parts = chat_message.text.split()
+    return message_parts

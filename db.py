@@ -41,3 +41,22 @@ def database_cleanup():
         if saved_date <= month_old_date:
             print("Deleted:", query['Title'], "from database.")
             EVENTS_DB_CONNECTION.delete_one(filter=filter)
+
+def find_movie_by_title(movie_title):
+
+    filter = {
+        'Title': {
+            '$regex': re.compile(rf"(?i){movie_title}")
+        }
+    }
+
+    print(f'Finding theaters for movie: {movie_title}')
+
+    theaters = []
+
+    for query in EVENTS_DB_CONNECTION.find(filter = filter):
+        theaters.append(query['Picture'])
+        
+    print('found theaters:', theaters)
+        
+    return theaters
