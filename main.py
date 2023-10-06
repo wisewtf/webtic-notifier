@@ -5,6 +5,7 @@ import schedule
 import time
 import threading
 import re
+import theaters
 
 bot = telebot.TeleBot(tools.configurator('telegram', 'token'))
 
@@ -33,18 +34,20 @@ def theater_list(message):
         
 @bot.message_handler(commands=['fm'])
 def find_movie(message):
+    
+    composed_message = ''
+    
     if len(tools.command_argument(message)) >= 3:
         argument = ' '.join(tools.command_argument(message)[1:])
         print('argument:', argument)
         for query_result in db.find_movie_by_title(argument):
-            matched_cinema_id = re.findall(tools.CINEMA_ID_PATTERN, query_result)
+            matched_cinema_id = re.search(tools.CINEMA_ID_PATTERN, query_result)
             print('matched cinema id:', matched_cinema_id)
             if matched_cinema_id:
                 cinema_id = matched_cinema_id.group(1)
-                composed_message = ""
-                cinema_name, cinema_id = matched_cinema_id
-                composed_message += f"\n{cinema_name.title()} (<code>{cinema_id}</code>)"  # noqa: E501
-                print(composed_message)
+                cinema_name = theaters.theater_finder(int(cinema_id), "Description")
+                composed_message += f"{cinema_name} (<code>{cinema_id}</code>)\n"  # noqa: E501
+        bot.reply_to(message, composed_message, parse_mode='HTML')
     else:
         print('fuckoff')
 
