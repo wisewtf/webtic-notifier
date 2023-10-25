@@ -63,3 +63,22 @@ def find_movie_by_title(movie_title):
         print('No theaters found.')
         
     return theaters
+
+def tracking_checker(eventid):
+    filter_query = {'EventId': eventid}
+    result = EVENTS_DB_CONNECTION.find_one(filter_query)
+    
+    if result['Tracked']:
+        tracking_value = result
+    else:
+        pass
+
+    return tracking_value
+
+def track_movie(tracking_code: int):
+    result = EVENTS_DB_CONNECTION.update_many({"EventId": tracking_code}, {"$set": {"Tracked": True}})
+    return result.modified_count
+
+def untrack_movie(tracking_code: int):
+    result = EVENTS_DB_CONNECTION.update_many({"EventId": tracking_code}, {"$set": {"Tracked": False}})
+    return result.modified_count

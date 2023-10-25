@@ -66,13 +66,31 @@ def db_cleanup(message):
         db.database_cleanup()
     else:
         bot.reply_to(message, "Comando disponibile solo per amministratori del gruppo.", parse_mode='HTML')  # noqa: E501
+        
+@bot.message_handler(commands=['track'])
+def track_event(message):
+    if len(tools.command_argument(message)) == 2:
+        if db.track_movie(int(tools.command_argument(message)[1])) != 0:
+            bot.reply_to(message, f"Terrò traccia del film con ID: <code>{tools.command_argument(message)[1]}</code>", parse_mode='HTML')
+        else:
+            bot.reply_to(message, "Film già tracciato o ID invalido.")
+            
+@bot.message_handler(commands=['untrack'])
+def untrack_event(message):
+    if len(tools.command_argument(message)) == 2:
+        if db.untrack_movie(int(tools.command_argument(message)[1])) != 0:
+            bot.reply_to(message, f"Rimosso tracciamento da film con ID: <code>{tools.command_argument(message)[1]}</code>", parse_mode='HTML')
+        else:
+            bot.reply_to(message, "Film non tracciato o ID invalido.")
 
 
 bot.remove_webhook()
 bot.set_my_commands([
     telebot.types.BotCommand("tl", "Trova i cinema presenti in webtic, per ogni provincia. (/tl MI)"),  # noqa: E501
-    telebot.types.BotCommand("fm", "Trova i film disponibili nei cinema configurati. (/tl Harry Potter)"),  # noqa: E501
-    telebot.types.BotCommand("dbc", "Pulizia del database (amministratori)")  # noqa: E501
+    telebot.types.BotCommand("fm", "Cerca la disponibilità di un film nei cinema configurati. (/tl Harry Potter)"),  # noqa: E501
+    telebot.types.BotCommand("dbc", "Pulizia del database."),
+    telebot.types.BotCommand("track", "Tieni traccia degli aggiornamenti di un film. (/track ID)"),
+    telebot.types.BotCommand("untrack", "Rimuovi tracciamento da un film. (/untrack ID)")
 ])
 
 def schedule_db_cleanup():
