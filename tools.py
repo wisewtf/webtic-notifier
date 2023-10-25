@@ -65,3 +65,6 @@ def pickler(pickle_name: str, data):
 def command_argument(chat_message):
     message_parts = chat_message.text.split()
     return message_parts
+
+def remove_duplicates(str: str):
+    return "".join(set(str))

@@ -41,6 +41,8 @@ def database_cleanup():
         if saved_date <= month_old_date:
             print("Deleted:", query['Title'], "from database.")
             EVENTS_DB_CONNECTION.delete_one(filter=filter)
+        else:
+            print("No need to delete:", query['Title'], "from database.")
 
 def find_movie_by_title(movie_title):
 
@@ -56,7 +58,8 @@ def find_movie_by_title(movie_title):
 
     for query in EVENTS_DB_CONNECTION.find(filter = filter):
         theaters.append(query['Picture'])
-        
-    print('found theaters:', theaters)
+
+    if not theaters:
+        print('No theaters found.')
         
     return theaters
