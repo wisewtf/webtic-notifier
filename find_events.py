@@ -83,7 +83,7 @@ for events in events_data:
             for key, value in calendar.items():
                 movie_date += f'<code>{key}</code>: {value}\n'
             
-            if event_type == "CINEMA" or not tools.configurator('general', 'cinema_events_only'):  # noqa: E501
+            if event_type == "CINEMA" and not tools.italy_buster(title, year):
                 tools.notifier(
                     body=(
                         f'<b>NEW AVAILABLE MOVIE AT {theaters.theater_finder(int(cinema_id),"Description")}</b>\n'  # noqa: E501
@@ -135,7 +135,7 @@ for updated_event in updated_events:
         
         for key, value in calendar.items():
             movie_date += f'<code>{key}</code>: {value}\n'
-        
+
         tools.notifier(
             body=(
                 f'<b>A MOVIE YOU TRACK HAS BEEN UPDATED</b>\n'

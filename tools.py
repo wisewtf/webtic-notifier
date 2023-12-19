@@ -68,3 +68,18 @@ def command_argument(chat_message):
 
 def remove_duplicates(str: str):
     return "".join(set(str))
+
+def italy_buster(title, year):
+    omdb_data = []
+    omdb_url = f"http://www.omdbapi.com/?apikey={configurator('omdb', 'api_key')}&t={title}&y={year}"
+    omdb_response = requests.get(omdb_url)
+    omdb_data.append(omdb_response.json())
+    
+    print('Looking for movie data of:', {title})
+    
+    for movie in omdb_data:
+        print(str(movie['Country']))
+        if str(movie['Country']) == 'Italy':
+            return False
+        else:
+            return True
