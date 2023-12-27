@@ -22,6 +22,7 @@ two_weeks_old_date = datetime.now() - timedelta(weeks=2)
 if saved_date <= two_weeks_old_date:
     print('Theater list is over two weeks old. Updating.')
     theaters.theater_updater()
+    tools.pickle_initializer(THEATERS_PICKLE_FILENAME)
 else:
     pass
 
@@ -83,7 +84,7 @@ for events in events_data:
             for key, value in calendar.items():
                 movie_date += f'<code>{key}</code>: {value}\n'
             
-            if event_type == "CINEMA" and not tools.italy_buster(title, year):
+            if event_type == "CINEMA":
                 tools.notifier(
                     body=(
                         f'<b>NEW AVAILABLE MOVIE AT {theaters.theater_finder(int(cinema_id),"Description")}</b>\n'  # noqa: E501
@@ -101,8 +102,11 @@ for events in events_data:
                     ),
                     picture=picture
                 )
+            else:
+                pass
 
 for updated_event in updated_events:
+    print(updated_event['EventId'])
     updated_movie = db.tracking_checker(updated_event['EventId'])
     if updated_movie:
         calendar = {}
@@ -147,3 +151,5 @@ for updated_event in updated_events:
             ),
             picture=picture
         )
+    else:
+        pass

@@ -71,7 +71,7 @@ def tracking_checker(eventid):
     if result['Tracked']:
         tracking_value = result
     else:
-        pass
+        tracking_value = False
 
     return tracking_value
 
