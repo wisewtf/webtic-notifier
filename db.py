@@ -77,8 +77,10 @@ def tracking_checker(eventid):
 
 def track_movie(tracking_code: int):
     result = EVENTS_DB_CONNECTION.update_many({"EventId": tracking_code}, {"$set": {"Tracked": True}})
+    print('Tracking movie:', tracking_code)
     return result.modified_count
 
 def untrack_movie(tracking_code: int):
     result = EVENTS_DB_CONNECTION.update_many({"EventId": tracking_code}, {"$set": {"Tracked": False}})
+    print('Untracking movie:', tracking_code)
     return result.modified_count

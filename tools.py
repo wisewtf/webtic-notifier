@@ -69,17 +69,20 @@ def command_argument(chat_message):
 def remove_duplicates(str: str):
     return "".join(set(str))
 
-def italy_buster(title, year):
-    omdb_data = []
-    omdb_url = f"http://www.omdbapi.com/?apikey={configurator('omdb', 'api_key')}&t={title}&y={year}"
-    omdb_response = requests.get(omdb_url)
-    omdb_data.append(omdb_response.json())
+def find_movie_info(title):
+
+    headers = {
+    "accept": "application/json",
+    "Authorization": f"Bearer {configurator('tmdb', 'bearer_token')}"
+}
+    tmdb_search_url = f"https://api.themoviedb.org/3/search/movie?query={title}&include_adult=false&language=it-IT&page=1"
+    search_response = requests.get(tmdb_search_url, headers=headers)
     
-    print('Looking for movie data of:', {title})
+    movie_id = search_response.json()['results'][0]['id']
     
-    for movie in omdb_data:
-        print(str(movie['Country']))
-        if str(movie['Country']) == 'Italy':
-            return False
-        else:
-            return True
+    tmdb_details_url = f"https://api.themoviedb.org/3/movie/{movie_id}?language=it-IT"
+    details_response = requests.get(tmdb_details_url, headers=headers)
+    
+    print(details_response.json())
+
+    

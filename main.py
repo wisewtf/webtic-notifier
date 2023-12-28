@@ -6,6 +6,7 @@ import time
 import threading
 import re
 import theaters
+import urllib.parse
 
 bot = telebot.TeleBot(tools.configurator('telegram', 'token'))
 
@@ -82,6 +83,12 @@ def untrack_event(message):
             bot.reply_to(message, f"Rimosso tracciamento da film con ID: <code>{tools.command_argument(message)[1]}</code>", parse_mode='HTML')
         else:
             bot.reply_to(message, "Film non tracciato o ID invalido.")
+            
+@bot.message_handler(commands=['info'])
+def movie_info(message):
+    if len(tools.command_argument(message)) >= 2:
+        argument = ' '.join(tools.command_argument(message)[1:])
+        tools.find_movie_info(urllib.parse.quote(argument))
 
 
 bot.remove_webhook()
@@ -90,7 +97,8 @@ bot.set_my_commands([
     telebot.types.BotCommand("fm", "Cerca la disponibilità di un film nei cinema configurati. (/tl Harry Potter)"),  # noqa: E501
     telebot.types.BotCommand("dbc", "Pulizia del database."),
     telebot.types.BotCommand("track", "Tieni traccia degli aggiornamenti di un film. (/track ID)"),
-    telebot.types.BotCommand("untrack", "Rimuovi tracciamento da un film. (/untrack ID)")
+    telebot.types.BotCommand("untrack", "Rimuovi tracciamento da un film. (/untrack ID)"),
+    telebot.types.BotCommand("info", "Trova informazioni su un film (/info TITOLO)")
 ])
 
 def schedule_db_cleanup():
