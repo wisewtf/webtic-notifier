@@ -117,6 +117,7 @@ def find_movie_info(title, argument):
             f'<b>Titolo Originale:</b> {movie["original_title"]}\n'
             f'<b>Generi:</b> {genre_names}\n'
             f'<b>Durata:</b> {movie["runtime"]}\"\n'
+            f'<b>Data di uscita:</b> {movie["release_date"]}'
             f'<b>Produzione:</b> <code>{company_name[0]}</code>\n'
             f'<b>Origine:</b> <code>{origin_country[0]}</code>\n'
             f'<b>Lingua Originale:</b> <code>{movie["original_language"]}</code>\n'
