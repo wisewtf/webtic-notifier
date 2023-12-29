@@ -52,17 +52,15 @@ def find_movie_by_title(movie_title):
         }
     }
 
-    print(f'Finding theaters for movie: {movie_title}')
-
     theaters = []
 
     for query in EVENTS_DB_CONNECTION.find(filter = filter):
         theaters.append(query['Picture'])
 
     if not theaters:
-        print('No theaters found.')
-        
-    return theaters
+        return 'No theaters found.'
+    else:
+        return theaters
 
 def tracking_checker(eventid):
     filter_query = {'EventId': eventid}

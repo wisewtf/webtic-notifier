@@ -4,8 +4,6 @@ import tools
 import schedule
 import time
 import threading
-import re
-import theaters
 import urllib.parse
 
 bot = telebot.TeleBot(tools.configurator('telegram', 'token'))
@@ -32,28 +30,6 @@ def theater_list(message):
         bot.reply_to(message, 'Questo comando accetta un solo argomento.')
     else:
         bot.reply_to(message, 'Specifica il codice provincia.')
-        
-@bot.message_handler(commands=['fm'])
-def find_movie(message):
-    
-    composed_message = []
-    
-    if len(tools.command_argument(message)) >= 2:
-        argument = ' '.join(tools.command_argument(message)[1:])
-        for query_result in db.find_movie_by_title(argument):
-            matched_cinema_id = re.search(tools.CINEMA_ID_PATTERN, query_result)
-            if matched_cinema_id:
-                cinema_id = matched_cinema_id.group(1)
-                cinema_name = theaters.theater_finder(int(cinema_id), "Description")
-                composed_message.append(f"{cinema_name} (<code>{cinema_id}</code>)\n")
-        unique_theaters = []
-        for found_theater in composed_message:
-            if found_theater not in unique_theaters:
-                unique_theaters.append(found_theater)
-        if unique_theaters:
-            bot.reply_to(message, f"'<code>{argument.title()}</code>' è disponibile nei seguenti cinema da te configurati:\n\n{''.join(set(unique_theaters))}", parse_mode='HTML')  # noqa: E501
-        else:
-            bot.reply_to(message, f"'<code>{argument.title()}</code>' non trovato.", parse_mode='HTML')  # noqa: E501
             
 @bot.message_handler(commands=['dbc'])
 def db_cleanup(message):
@@ -88,13 +64,13 @@ def untrack_event(message):
 def movie_info(message):
     if len(tools.command_argument(message)) >= 2:
         argument = ' '.join(tools.command_argument(message)[1:])
-        tools.find_movie_info(urllib.parse.quote(argument))
+        print("Cerco info su:", argument)
+        tools.find_movie_info(urllib.parse.quote(argument), argument)
 
 
 bot.remove_webhook()
 bot.set_my_commands([
     telebot.types.BotCommand("tl", "Trova i cinema presenti in webtic, per ogni provincia. (/tl MI)"),  # noqa: E501
-    telebot.types.BotCommand("fm", "Cerca la disponibilità di un film nei cinema configurati. (/tl Harry Potter)"),  # noqa: E501
     telebot.types.BotCommand("dbc", "Pulizia del database."),
     telebot.types.BotCommand("track", "Tieni traccia degli aggiornamenti di un film. (/track ID)"),
     telebot.types.BotCommand("untrack", "Rimuovi tracciamento da un film. (/untrack ID)"),
