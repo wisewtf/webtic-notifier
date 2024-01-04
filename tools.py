@@ -4,7 +4,7 @@ import sys
 import requests
 import pickle
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 
 argParser = argparse.ArgumentParser(description='The config file path must be specified')  # noqa: E501
 argParser.add_argument("-c", "--config", help="Config file absolute path")
@@ -21,6 +21,11 @@ THEATERS_URL = "https://www.webtic.it/proxyWsl/Services/BoWtJsonServices.ashx?da
 def logger(message):
     print(f"[{datetime.today()}]", message)
     
+def requestor(url):
+    requestor_url = url
+    requestor_response = requests.get(requestor_url)
+    return requestor_response
+
 def configurator(section, value):
     
     with open(f"{args.config}", "rb") as f:
@@ -128,3 +133,15 @@ def find_movie_info(title):
         )
     else:
         notifier("Oops, non ho trovato nulla, solo questa mucca.", "https://i.pinimg.com/736x/ff/e5/21/ffe521dff8e2c6801e754de090dfaea6.jpg")
+        
+def generate_dates():
+    today_date = datetime.now().strftime("%Y-%m-%d")
+    date_format = "%Y-%m-%d"
+    start_date = datetime.strptime(today_date, date_format)
+    
+    dates = []
+    while start_date.month == datetime.strptime(today_date, date_format).month:
+        dates.append(start_date.strftime(date_format))
+        start_date += timedelta(days=1)
+
+    return dates
