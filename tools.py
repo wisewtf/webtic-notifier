@@ -7,7 +7,7 @@ import db
 import re
 import theaters
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 
 argParser = argparse.ArgumentParser(description='The config file path must be specified')  # noqa: E501
 argParser.add_argument("-c", "--config", help="Config file absolute path")
@@ -20,6 +20,14 @@ args = argParser.parse_args()
 
 CINEMA_ID_PATTERN = r"idcinema=(\d+)"
 THEATERS_URL = "https://www.webtic.it/proxyWsl/Services/BoWtJsonServices.ashx?datasource=CREADW&wtid=webticEventsMc"
+
+def logger(message):
+    print(f"[{datetime.today()}]", message)
+    
+def requestor(url):
+    requestor_url = url
+    requestor_response = requests.get(requestor_url)
+    return requestor_response
     
 def configurator(section, value):
     
@@ -128,3 +136,36 @@ def find_movie_info(title, argument):
         )
     else:
         notifier("Oops, non ho trovato nulla, solo questa mucca.", "https://i.pinimg.com/736x/ff/e5/21/ffe521dff8e2c6801e754de090dfaea6.jpg")
+        
+def generate_dates(date):
+    today_date = date
+    date_format = "%Y-%m-%d"
+    start_date = datetime.strptime(today_date, date_format)
+    
+    dates = []
+    while start_date.month == datetime.strptime(today_date, date_format).month:
+        dates.append(start_date.strftime(date_format))
+        start_date += timedelta(days=1)
+
+    return dates
+
+def generate_next_month_date():
+    current_date = datetime.now()
+    first_day_of_next_month = (current_date.replace(day=1) + timedelta(days=32)).replace(day=1)
+    first_day_of_next_month = first_day_of_next_month.date()
+
+    return str(first_day_of_next_month)
+
+def generate_two_month_ahead_date():
+    current_date = datetime.now()
+    first_day_of_next_month = (current_date.replace(day=1) + timedelta(days=64)).replace(day=1)
+    first_day_of_next_month = first_day_of_next_month.date()
+
+    return str(first_day_of_next_month)
+
+def generate_today():
+
+    today_date = datetime.now()
+    formatted_date = today_date.strftime("%Y-%m-%d")
+    
+    return str(formatted_date)
