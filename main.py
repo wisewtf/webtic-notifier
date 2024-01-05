@@ -11,6 +11,8 @@ import urllib.parse
 from datetime import datetime, timedelta
 from pathlib import Path
 
+tools.logger("Started bot")
+
 bot = telebot.TeleBot(tools.configurator('telegram', 'token'))
 
 THEATERS_PICKLE_FILENAME = 'theater_date.pickle'
