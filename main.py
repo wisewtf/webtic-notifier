@@ -5,7 +5,8 @@ import schedule
 import time
 import threading
 import theaters
-import events
+import webtic
+import anteo
 import urllib.parse
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -104,7 +105,8 @@ bot.set_my_commands([
 def schedules():
 
     schedule.every(1).weeks.do(db.database_cleanup)
-    schedule.every(1).minutes.do(events.findnew)
+    schedule.every(15).minutes.do(webtic.findnew)
+    schedule.every(15).minutes.do(lambda: anteo.findnew("2024-01-01"))
 
     while True:
         schedule.run_pending()

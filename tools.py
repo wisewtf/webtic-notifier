@@ -3,6 +3,9 @@ import argparse
 import sys
 import requests
 import pickle
+import db
+import re
+import theaters
 from pathlib import Path
 from datetime import datetime, timedelta
 
@@ -25,7 +28,7 @@ def requestor(url):
     requestor_url = url
     requestor_response = requests.get(requestor_url)
     return requestor_response
-
+    
 def configurator(section, value):
     
     with open(f"{args.config}", "rb") as f:
@@ -77,32 +80,32 @@ def command_argument(chat_message):
 def remove_duplicates(str: str):
     return "".join(set(str))
 
-def find_movie_info(title):
+def find_movie_info(title, argument):
     
-    # composed_message = []
+    composed_message = []
 
-    # for query_result in db.find_movie_by_title(argument):
-    #     matched_cinema_id = re.search(CINEMA_ID_PATTERN, query_result)
-    #     if matched_cinema_id:
-    #         cinema_id = matched_cinema_id.group(1)
-    #         cinema_name = theaters.theater_finder(int(cinema_id), "Description")
-    #         composed_message.append(f"{cinema_name} (<code>{cinema_id}</code>)\n")
-    #     else:
-    #         continue
-    # unique_theaters = []
-    # for found_theater in composed_message:
-    #     if found_theater not in unique_theaters:
-    #         unique_theaters.append(found_theater)
-    # if unique_theaters:
-    #     unique_theaters_str = ''.join(set(unique_theaters))  # noqa: E501
-    # else:
-    #     unique_theaters_str = "Non disponibile"
+    for query_result in db.find_movie_by_title(argument):
+        matched_cinema_id = re.search(CINEMA_ID_PATTERN, query_result)
+        if matched_cinema_id:
+            cinema_id = matched_cinema_id.group(1)
+            cinema_name = theaters.theater_finder(int(cinema_id), "Description")
+            composed_message.append(f"{cinema_name} (<code>{cinema_id}</code>)\n")
+        else:
+            continue
+    unique_theaters = []
+    for found_theater in composed_message:
+        if found_theater not in unique_theaters:
+            unique_theaters.append(found_theater)
+    if unique_theaters:
+        unique_theaters_str = ''.join(set(unique_theaters))  # noqa: E501
+    else:
+        unique_theaters_str = "Non disponibile"
 
     headers = {
     "accept": "application/json",
     "Authorization": f"Bearer {configurator('tmdb', 'bearer_token')}"
 }
-    tmdb_search_url = f"https://api.themoviedb.org/3/search/movie?query={title}&language=it-IT&page=1"
+    tmdb_search_url = f"https://api.themoviedb.org/3/search/movie?query={title}&include_adult=false&language=it-IT&page=1"
     search_response = requests.get(tmdb_search_url, headers=headers)
     
     if search_response.json()['total_results'] != 0:
@@ -112,7 +115,7 @@ def find_movie_info(title):
         
         movie = details_response.json()
         
-        
+        genre_names = ', '.join([genre['name'] for genre in movie['genres']])
         company_name = [company['name'] for company in movie['production_companies']]
         origin_country = [origin['name'] for origin in movie['production_countries']]
         
@@ -134,8 +137,8 @@ def find_movie_info(title):
     else:
         notifier("Oops, non ho trovato nulla, solo questa mucca.", "https://i.pinimg.com/736x/ff/e5/21/ffe521dff8e2c6801e754de090dfaea6.jpg")
         
-def generate_dates():
-    today_date = datetime.now().strftime("%Y-%m-%d")
+def generate_dates(date):
+    today_date = date
     date_format = "%Y-%m-%d"
     start_date = datetime.strptime(today_date, date_format)
     
