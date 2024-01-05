@@ -17,7 +17,7 @@ THEATERS_PICKLE_FILENAME = 'theater_date.pickle'
 THEATERS_PICKLE_PATH = Path(THEATERS_PICKLE_FILENAME)
 
 if not THEATERS_PICKLE_PATH.is_file():
-    print('Theaters pickle file missing, initializing...')
+    tools.logger('Creo cetriolo')
     tools.pickle_initializer(THEATERS_PICKLE_FILENAME)
     theaters.theater_updater()
 else:
@@ -27,7 +27,7 @@ saved_date = tools.unpickler(THEATERS_PICKLE_FILENAME)
 two_weeks_old_date = datetime.now() - timedelta(weeks=2)
 
 if saved_date <= two_weeks_old_date:
-    print('Theater list is over two weeks old. Updating.')
+    tools.logger('Aggiorno lista dei cinema')
     theaters.theater_updater()
     tools.pickle_initializer(THEATERS_PICKLE_FILENAME)
 else:
@@ -89,7 +89,7 @@ def untrack_event(message):
 def movie_info(message):
     if len(tools.command_argument(message)) >= 2:
         argument = ' '.join(tools.command_argument(message)[1:])
-        print("Cerco info su:", argument)
+        tools.logger(f"Cerco info su: {argument}")
         tools.find_movie_info(urllib.parse.quote(argument), argument)
 
 
@@ -106,8 +106,9 @@ def schedules():
 
     schedule.every(1).weeks.do(db.database_cleanup)
     schedule.every(15).minutes.do(webtic.findnew)
-    schedule.every(15).minutes.do(lambda: anteo.findnew("2024-01-01"))
-
+    schedule.every(15).minutes.do(lambda: anteo.findnew(tools.generate_today()))
+    schedule.every(30).minutes.do(lambda: anteo.findnew(tools.generate_next_month_date()))
+    schedule.every(30).minutes.do(lambda: anteo.findnew(tools.generate_two_month_ahead_date()))
     while True:
         schedule.run_pending()
         time.sleep(1)

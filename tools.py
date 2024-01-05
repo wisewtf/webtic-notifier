@@ -148,3 +148,24 @@ def generate_dates(date):
         start_date += timedelta(days=1)
 
     return dates
+
+def generate_next_month_date():
+    current_date = datetime.now()
+    first_day_of_next_month = (current_date.replace(day=1) + timedelta(days=32)).replace(day=1)
+    first_day_of_next_month = first_day_of_next_month.date()
+
+    return str(first_day_of_next_month)
+
+def generate_two_month_ahead_date():
+    current_date = datetime.now()
+    first_day_of_next_month = (current_date.replace(day=1) + timedelta(days=64)).replace(day=1)
+    first_day_of_next_month = first_day_of_next_month.date()
+
+    return str(first_day_of_next_month)
+
+def generate_today():
+
+    today_date = datetime.now()
+    formatted_date = today_date.strftime("%Y-%m-%d")
+    
+    return str(formatted_date)

@@ -8,5 +8,6 @@ host = 'mongodb://user:pass@mongodbhostname:27017/?authMechanism=DEFAULT'
 [webtic]
 cinema_ids = [ 1234, 5678 ]
 
-[general]
-cinema_events_only = true
+[tmdb]
+api_key = ''
+bearer_token = ''

@@ -3,31 +3,10 @@ import tools
 import re
 import db
 import theaters
-from datetime import datetime, timedelta
-from pathlib import Path
-
-THEATERS_PICKLE_FILENAME = 'theater_date.pickle'
-THEATERS_PICKLE_PATH = Path(THEATERS_PICKLE_FILENAME)
-
-if not THEATERS_PICKLE_PATH.is_file():
-    print('Theaters pickle file missing, initializing...')
-    tools.pickle_initializer(THEATERS_PICKLE_FILENAME)
-    theaters.theater_updater()
-else:
-    pass
-
-saved_date = tools.unpickler(THEATERS_PICKLE_FILENAME)
-two_weeks_old_date = datetime.now() - timedelta(weeks=2)
-
-if saved_date <= two_weeks_old_date:
-    print('Theater list is over two weeks old. Updating.')
-    theaters.theater_updater()
-    tools.pickle_initializer(THEATERS_PICKLE_FILENAME)
-else:
-    pass
-
+from datetime import datetime
 
 events_data = []
+updated_events = []
 
 def findnew():
     
@@ -106,12 +85,9 @@ def findnew():
                 else:
                     pass
 
-updated_events = []
-
-def findupdated():
+    tools.logger("Cerco film aggiornati su Webtic")
 
     for updated_event in updated_events:
-        print(updated_event['EventId'])
         updated_movie = db.tracking_checker(updated_event['EventId'])
         if updated_movie:
             calendar = {}

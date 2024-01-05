@@ -1,10 +1,10 @@
 from pymongo import MongoClient
-from tools import configurator
 import re
+import tools
 from datetime import datetime,timedelta
 
 def connect(db_name, collection_name):
-    mongo_connect = MongoClient(configurator('database', 'host'))
+    mongo_connect = MongoClient(tools.configurator('database', 'host'))
     db = mongo_connect[db_name]
     collection = db[collection_name]
     return collection
@@ -30,7 +30,7 @@ def find_theater_by_province(two_letter_code):
 
 def database_cleanup():
     
-    print('Database cleanup started')
+    tools.logger('Database cleanup started')
     
     for query in EVENTS_DB_CONNECTION.find(({})):
         saved_date = datetime.strptime(query['Days'][-1]['Day'], '%Y-%m-%dT%H:%M:%S')
@@ -39,10 +39,10 @@ def database_cleanup():
         filter = {"EventId": query['EventId']}
 
         if saved_date <= month_old_date:
-            print("Deleted:", query['Title'], "from database.")
+            tools.logger(f"Deleted: {query['Title']} from database.")
             EVENTS_DB_CONNECTION.delete_one(filter=filter)
         else:
-            print("No need to delete:", query['Title'], "from database.")
+            tools.logger(f"No need to delete: {query['Title']} from database.")
 
 def find_movie_by_title(movie_title):
 
@@ -69,16 +69,16 @@ def tracking_checker(eventid):
     if result['Tracked']:
         tracking_value = result
     else:
-        tracking_value = False
+        pass
 
     return tracking_value
 
 def track_movie(tracking_code: int):
     result = EVENTS_DB_CONNECTION.update_many({"EventId": tracking_code}, {"$set": {"Tracked": True}})
-    print('Tracking movie:', tracking_code)
+    tools.logger(f'Tracking movie: {tracking_code}')
     return result.modified_count
 
 def untrack_movie(tracking_code: int):
     result = EVENTS_DB_CONNECTION.update_many({"EventId": tracking_code}, {"$set": {"Tracked": False}})
-    print('Untracking movie:', tracking_code)
+    tools.logger(f'Untracking movie: {tracking_code}')
     return result.modified_count
