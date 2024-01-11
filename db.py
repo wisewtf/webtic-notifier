@@ -66,10 +66,13 @@ def tracking_checker(eventid):
     filter_query = {'EventId': eventid}
     result = EVENTS_DB_CONNECTION.find_one(filter_query)
     
-    if result['Tracked']:
-        tracking_value = result
-    else:
-        pass
+    try:
+        if result['Tracked']:
+            tracking_value = result
+        else:
+            pass
+    except KeyError:
+        tools.logger("No tracking for this movie")
 
     return tracking_value
 
