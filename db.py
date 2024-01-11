@@ -74,7 +74,10 @@ def tracking_checker(eventid):
     except KeyError:
         tools.logger("No tracking for this movie")
 
-    return tracking_value
+    if tracking_value:
+        return tracking_value
+    else:
+        pass
 
 def track_movie(tracking_code: int):
     result = EVENTS_DB_CONNECTION.update_many({"EventId": tracking_code}, {"$set": {"Tracked": True}})
