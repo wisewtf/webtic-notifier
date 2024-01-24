@@ -117,4 +117,4 @@ def schedules():
         
 threading.Thread(target=schedules, daemon=True).start()
 
-bot.infinity_polling()
+bot.infinity_polling(timeout=10, skip_pending=True, long_polling_timeout=5)
