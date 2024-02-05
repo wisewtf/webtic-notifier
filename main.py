@@ -99,8 +99,8 @@ bot.remove_webhook()
 bot.set_my_commands([
     telebot.types.BotCommand("tl", "Trova i cinema presenti in webtic, per ogni provincia. (/tl MI)"),
     telebot.types.BotCommand("dbc", "Pulizia del database."),
-    telebot.types.BotCommand("track", "Tieni traccia degli aggiornamenti di un film. (/track ID)"),
-    telebot.types.BotCommand("untrack", "Rimuovi tracciamento da un film. (/untrack ID)"),
+    # telebot.types.BotCommand("track", "Tieni traccia degli aggiornamenti di un film. (/track ID)"),
+    # telebot.types.BotCommand("untrack", "Rimuovi tracciamento da un film. (/untrack ID)"),
     telebot.types.BotCommand("info", "Trova informazioni su un film (/info TITOLO)")
 ])
 
