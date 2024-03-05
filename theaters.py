@@ -17,9 +17,10 @@ def theater_updater():
         theater_data = theater_list.json()
         locals_list = theater_data['DS']['Locals']
 
-        tools.logger('Updating theater collection')
+        tools.logger('Aggiornamento lista cinema')
         for locals in locals_list:
             local_data = locals_list[locals]
             filter = {'LocalId': local_data['LocalId']}
             update = {'$set': local_data}
             db.connect('webtic', 'theaters').update_one(filter, update, upsert=True)
+        tools.logger('Lista cinema aggiornata')

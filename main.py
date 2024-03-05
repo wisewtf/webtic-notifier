@@ -89,8 +89,8 @@ bot.set_my_commands([
 def schedules():
 
     schedule.every(1).weeks.do(db.database_cleanup)
-    schedule.every(1).minutes.do(webtic.findnew)
-    schedule.every(1).minutes.do(lambda: anteo.findnew(tools.generate_today()))
+    schedule.every(tools.configurator('general', 'webtic_update_time')).minutes.do(webtic.findnew)
+    schedule.every(tools.configurator('general', 'anteo_update_time')).minutes.do(lambda: anteo.findnew(tools.generate_today()))
 
     while True:
         schedule.run_pending()
