@@ -112,7 +112,7 @@ def schedules():
 
     while True:
         schedule.run_pending()
-        time.sleep(1)
+        time.sleep(1)        
+        bot.infinity_polling(timeout=10, skip_pending=True, long_polling_timeout=5)
         
 threading.Thread(target=schedules, daemon=True).start()
-bot.infinity_polling(timeout=10, skip_pending=True, long_polling_timeout=5)
