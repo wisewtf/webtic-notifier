@@ -8,12 +8,32 @@ import theaters
 import webtic
 import anteo
 import urllib.parse
+from datetime import datetime, timedelta
+from pathlib import Path
 
 tools.logger("Started bot")
 
 bot = telebot.TeleBot(tools.configurator('telegram', 'token'))
 
-theaters.theater_updater()
+THEATERS_PICKLE_FILENAME = 'theater_date.pickle'
+THEATERS_PICKLE_PATH = Path(THEATERS_PICKLE_FILENAME)
+
+if not THEATERS_PICKLE_PATH.is_file():
+    tools.logger('Creo cetriolo')
+    tools.pickle_initializer(THEATERS_PICKLE_FILENAME)
+    theaters.theater_updater()
+else:
+    pass
+
+saved_date = tools.unpickler(THEATERS_PICKLE_FILENAME)
+two_weeks_old_date = datetime.now() - timedelta(weeks=2)
+
+if saved_date <= two_weeks_old_date:
+    tools.logger('Aggiorno lista dei cinema')
+    theaters.theater_updater()
+    tools.pickle_initializer(THEATERS_PICKLE_FILENAME)
+else:
+    pass
 
 @bot.message_handler(commands=['tl'])
 def theater_list(message):
@@ -50,7 +70,7 @@ def db_cleanup(message):
         db.database_cleanup()
     else:
         bot.reply_to(message, "Comando disponibile solo per amministratori del gruppo.", parse_mode='HTML')
-            
+
 @bot.message_handler(commands=['info'])
 def movie_info(message):
     if len(tools.command_argument(message)) >= 2:
@@ -69,12 +89,12 @@ bot.set_my_commands([
 def schedules():
 
     schedule.every(1).weeks.do(db.database_cleanup)
-    schedule.every(15).minutes.do(webtic.findnew)
-    schedule.every(15).minutes.do(lambda: anteo.findnew(tools.generate_today()))
+    schedule.every(1).minutes.do(webtic.findnew)
+    schedule.every(1).minutes.do(lambda: anteo.findnew(tools.generate_today()))
 
     while True:
         schedule.run_pending()
-        time.sleep(1)        
-
+        time.sleep(1)
+        
 threading.Thread(target=schedules, daemon=True).start()
 bot.infinity_polling(timeout=10, skip_pending=True, long_polling_timeout=5)
