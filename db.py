@@ -61,30 +61,3 @@ def find_movie_by_title(movie_title):
         return 'No theaters found.'
     else:
         return theaters
-
-def tracking_checker(eventid):
-    filter_query = {'EventId': eventid}
-    result = EVENTS_DB_CONNECTION.find_one(filter_query)
-    
-    try:
-        if result['Tracked']:
-            tracking_value = result
-        else:
-            pass
-    except KeyError:
-        tools.logger("No tracking for this movie")
-
-    if tracking_value:
-        return tracking_value
-    else:
-        pass
-
-def track_movie(tracking_code: int):
-    result = EVENTS_DB_CONNECTION.update_many({"EventId": tracking_code}, {"$set": {"Tracked": True}})
-    tools.logger(f'Tracking movie: {tracking_code}')
-    return result.modified_count
-
-def untrack_movie(tracking_code: int):
-    result = EVENTS_DB_CONNECTION.update_many({"EventId": tracking_code}, {"$set": {"Tracked": False}})
-    tools.logger(f'Untracking movie: {tracking_code}')
-    return result.modified_count
