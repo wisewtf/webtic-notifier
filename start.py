@@ -27,4 +27,3 @@ else:
 
 webtic.findnew()
 anteo.findnew(tools.generate_today())
-anteo.findnew(tools.generate_next_month_date())
