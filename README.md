@@ -25,3 +25,5 @@ options:
 ```
 
 `-c` è un argomento obbligatorio. Indica quale file di configurazione usare. Il file di conifgurazione deve essere un `.toml` scritto come `example.config.toml` presente in questo repo.
+
+Usare cron o systemd-timers per lanciare `start.py`
