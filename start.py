@@ -1,7 +1,7 @@
 import tools
 import theaters
 import webtic
-import anteo
+#import anteo
 from pathlib import Path
 from datetime import timedelta, datetime
 
