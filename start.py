@@ -26,4 +26,4 @@ else:
     pass
 
 webtic.findnew()
-anteo.findnew(tools.generate_today())
+#anteo.findnew(tools.generate_today())
