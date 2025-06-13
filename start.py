@@ -1,7 +1,6 @@
 import tools
 import theaters
 import webtic
-import anteo
 from pathlib import Path
 from datetime import timedelta, datetime
 
@@ -26,4 +25,3 @@ else:
     pass
 
 webtic.findnew()
-anteo.findnew(tools.generate_today())

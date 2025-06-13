@@ -4,7 +4,7 @@ import sys
 import requests
 import pickle
 from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import datetime
 
 argParser = argparse.ArgumentParser(description='The config file path must be specified')  # noqa: E501
 argParser.add_argument("-c", "--config", help="Config file absolute path")
@@ -76,36 +76,3 @@ def command_argument(chat_message):
 
 def remove_duplicates(str: str):
     return "".join(set(str))
-        
-def generate_dates(date):
-    today_date = date
-    date_format = "%Y-%m-%d"
-    start_date = datetime.strptime(today_date, date_format)
-    
-    dates = []
-    while start_date.month == datetime.strptime(today_date, date_format).month:
-        dates.append(start_date.strftime(date_format))
-        start_date += timedelta(days=1)
-
-    return dates
-
-def generate_next_month_date():
-    current_date = datetime.now()
-    first_day_of_next_month = (current_date.replace(day=1) + timedelta(days=32)).replace(day=1)
-    first_day_of_next_month = first_day_of_next_month.date()
-
-    return str(first_day_of_next_month)
-
-def generate_two_month_ahead_date():
-    current_date = datetime.now()
-    first_day_of_next_month = (current_date.replace(day=1) + timedelta(days=64)).replace(day=1)
-    first_day_of_next_month = first_day_of_next_month.date()
-
-    return str(first_day_of_next_month)
-
-def generate_today():
-
-    today_date = datetime.now()
-    formatted_date = today_date.strftime("%Y-%m-%d")
-    
-    return str(formatted_date)
