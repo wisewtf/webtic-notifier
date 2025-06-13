@@ -2,15 +2,6 @@ import requests
 import tools
 import db
 
-def theater_finder(id,item):
-    
-    local_id = id
-    query = {'LocalId': local_id}
-
-    theater = db.connect('webtic', 'theaters').find_one(query)
-        
-    return theater[item]
-
 def theater_updater():
 
         theater_list = requests.get(tools.THEATERS_URL)
