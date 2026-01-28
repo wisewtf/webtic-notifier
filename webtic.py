@@ -1,8 +1,6 @@
 import requests
 import tools
-import re
 import db
-import theaters
 from datetime import datetime
 
 events_data = []
@@ -52,13 +50,6 @@ def findnew():
                 year = event['Year']
                 category = event['Category']
                 
-                match_ciema_id = re.search(tools.CINEMA_ID_PATTERN, picture)
-                
-                if match_ciema_id:
-                    cinema_id = match_ciema_id.group(1)
-                else:
-                    cinema_id = 'could not find cinema id'
-                
                 movie_date = ''
                 
                 for key, value in calendar.items():
@@ -67,17 +58,15 @@ def findnew():
                 if event_type == "CINEMA":
                     tools.notifier(
                         body=(
-                            f'<b>NEW AVAILABLE MOVIE AT {theaters.theater_finder(int(cinema_id),"Description")}</b>\n'  # noqa: E501
+                            f'<b>NEW AVAILABLE MOVIE</b>\n'  # noqa: E501
                             f'\n<b>Title:</b> {title}\n'
                             f'<b>Length:</b> {duration}\n'
                             f'<b>Director:</b> {director}\n'
                             f'<b>Year:</b> {year}\n'
                             f'<b>Genre(s):</b> {category}\n'
                             f'<b>Type:</b> {event_type}\n'
-                            f'<b>3D:</b> {is3d}\n'
-                            f'<b>Cinema:</b> <code>{theaters.theater_finder(int(cinema_id),"Description")}</code>\n'  # noqa: E501                        
+                            f'<b>3D:</b> {is3d}\n'                     
                             f'\n{movie_date}\n'
-                            f'<a href="https://www.webtic.it/#/shopping?action=loadLocal&localId={cinema_id}">Order tickets here</a>\n'  # noqa: E501
                             f'Tracking code: <code>{eventid}</code>\n'
                         ),
                         picture=picture
