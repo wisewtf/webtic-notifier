@@ -1,4 +1,3 @@
 tomli
 requests
-pymongo
 argparse
