@@ -171,3 +171,5 @@ db/
 testing/
 .vs/
 *.pickle
+
+database.db

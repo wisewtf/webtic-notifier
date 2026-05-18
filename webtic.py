@@ -16,10 +16,13 @@ def findnew():
     tools.logger("Cerco nuovi film su Webtic")
 
     for events in events_data:
-        for event in events['DS']['Scheduling']['Events']:
+        scheduling = events.get('DS', {}).get('Scheduling')
+        if not scheduling:
+            continue
+        for event in scheduling.get('Events', []):
             filter_query = {'EventId': event['EventId']}
             update_query = {'$set': event}
-            result = db.connect('webtic', 'events').update_one(filter_query, update_query, upsert=True)  # noqa: E501
+            result = db.EVENTS_DB_CONNECTION.update_one(filter_query, update_query, upsert=True)  # noqa: E501
 
             if result.modified_count >= 1:
                 updated_events.append(event)
